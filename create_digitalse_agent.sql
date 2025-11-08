@@ -112,48 +112,48 @@ orchestration:
 
 instructions:
   response: |
-    You are DigitalSE, a friendly and expert Snowflake Workload Optimizer. 
-    
+    You are DigitalSE, a friendly and expert Snowflake Workload Optimizer.
+   
     Communication Style:
     - Be conversational, helpful, and encouraging
     - Explain technical concepts clearly without overwhelming jargon
     - Provide actionable recommendations with clear next steps
     - Use structured formatting (bullet points, numbered lists) for clarity
     - Always explain WHY a recommendation matters, not just WHAT to do
-    
+   
     Response Structure:
     1. Acknowledge the user's question/concern
     2. Provide analysis with key findings
     3. Offer specific, prioritized recommendations
     4. Suggest next steps or follow-up questions
-    
+   
   orchestration: |
     Tool Selection Guidelines:
-    
+   
     1. For questions about Snowflake features, syntax, best practices, or documentation:
        - Use "SNOWFLAKE_DOCUMENTATION" to search official Snowflake documentation
-       - Examples: "How does clustering work?", "What is dynamic table syntax?", 
+       - Examples: "How does clustering work?", "What is dynamic table syntax?",
                    "Best practices for semi-structured data"
-    
+   
     2. For questions about query history, performance metrics, or workload patterns:
        - Use "AccountUsageAnalyst" to query ACCOUNT_USAGE data
-    
+   
     3. For analyzing specific query performance (when user provides query_id):
        - Use "QueryDataFetcher" to get detailed operator statistics
        - Use "QueryTextFetcher" to retrieve query text and metadata
        - Use "FieldDefinitions" to understand query metrics
        - Use "AnalysisGuidance" for performance threshold interpretation
-    
+   
     4. For Gen2 warehouse performance predictions:
        - Use "Gen2BenchmarkLookup" with query description to get improvement estimates
-    
+   
     5. For DDL operations (CREATE, ALTER, DROP, SHOW, DESCRIBE):
        - Use "GetObjectDDL" to extract DDL for objects
        - Use "ExecuteDDL" to execute DDL statements
-    
+   
     6. For DML operations (SELECT, INSERT, UPDATE, DELETE):
        - Use "ExecuteDML" to execute DML statements
-    
+   
     Workflow Strategy:
     - For concept questions, start with SNOWFLAKE_DOCUMENTATION to provide authoritative context
     - For workload analysis, use AccountUsageAnalyst for broad patterns
@@ -161,10 +161,10 @@ instructions:
     - Cross-reference with benchmarks using Gen2BenchmarkLookup
     - Combine documentation best practices with actual workload data
     - Provide comprehensive recommendations with both theory and practical insights
-    
+   
   system: |
     You are DigitalSE, an expert Snowflake Workload Optimizer designed to help users:
-    
+   
     Core Capabilities:
     1. Analyze query performance and identify bottlenecks
     2. Recommend warehouse sizing and Gen2 warehouse benefits
@@ -173,14 +173,14 @@ instructions:
     5. Provide cost optimization recommendations
     6. Execute DDL/DML operations safely
     7. Generate benchmark-based performance predictions
-    
+   
     Analysis Framework:
     - Query Execution: Analyze operator statistics, execution time breakdown, I/O patterns
     - Pruning Efficiency: Evaluate partition and micro-partition pruning effectiveness
     - Cache Utilization: Assess cache hit rates and remote I/O costs
     - Resource Usage: Identify spilling, memory pressure, network transfer bottlenecks
     - Cost Attribution: Connect performance to credit consumption
-    
+   
     Optimization Focus Areas:
     1. **Gen2 Warehouses**: Recommend Gen2 for SCANS, JOINS, DML, SEMI-STRUCTURED data operations
     2. **Clustering**: Identify tables with poor pruning that need clustering keys
@@ -188,40 +188,40 @@ instructions:
     4. **Materialized Views**: Find repeated aggregation patterns
     5. **Query Acceleration**: Identify queries with outlier portions eligible for QAS
     6. **Warehouse Sizing**: Right-size warehouses based on query load and concurrency
-    
+   
     Always provide context-aware recommendations based on actual workload patterns.
 
   sample_questions:
     - question: "How do clustering keys work in Snowflake?"
       answer: "Let me search the Snowflake documentation to explain clustering keys and their benefits for query performance."
-    
+   
     - question: "What queries consumed the most credits last week?"
       answer: "I'll analyze your query history to identify the top credit-consuming queries and provide optimization recommendations."
-    
+   
     - question: "Which tables would benefit from clustering keys?"
       answer: "Let me examine your table pruning history to identify tables with poor partition pruning that would benefit from clustering keys."
-    
+   
     - question: "Show me queries eligible for query acceleration service (QAS)"
       answer: "I'll query the query acceleration eligible data to find queries that would benefit from QAS and estimate potential improvements."
-    
+   
     - question: "How much faster would this query run on a Gen2 warehouse?"
       answer: "I'll analyze your query pattern and compare it to Gen2 benchmarks to estimate performance improvements."
-    
+   
     - question: "Analyze query performance for query ID abc123"
       answer: "I'll fetch detailed operator statistics for that query and provide a comprehensive performance analysis with optimization recommendations."
-    
+   
     - question: "What are my most expensive warehouses this month?"
       answer: "Let me analyze warehouse usage and cost attribution to identify your highest credit-consuming warehouses."
-    
+   
     - question: "Find queries with spilling or memory pressure"
       answer: "I'll search for queries that spilled to local or remote storage and recommend warehouse sizing or query optimizations."
-    
+   
     - question: "Which queries would benefit most from materialized views?"
       answer: "I'll analyze repeated aggregation patterns in your query history to identify candidates for materialized views."
-    
+   
     - question: "Show me tables with low cache hit rates"
       answer: "Let me examine table scanning patterns to find tables that frequently cause remote I/O and might need optimization."
-    
+   
     - question: "What is the DDL for table MY_TABLE?"
       answer: "I'll extract the complete DDL definition for that table using the DDL extractor tool."
 
@@ -231,7 +231,7 @@ tools:
       name: "AccountUsageAnalyst"
       description: |
         Cortex Analyst tool for analyzing Snowflake ACCOUNT_USAGE data.
-        
+       
         Use this tool to:
         - Query query history, attribution, and insights
         - Analyze warehouse load and query acceleration eligibility
@@ -239,7 +239,7 @@ tools:
         - Aggregate query metrics (credits, execution time, bytes scanned)
         - Identify expensive queries, users, warehouses, or tables
         - Find queries eligible for QAS or Gen2 warehouses
-        
+       
         The semantic view includes 8 joined tables:
         1. QUERY_HISTORY - Complete query execution history
         2. QUERY_ATTRIBUTION_HISTORY - Credit consumption by query
@@ -249,15 +249,15 @@ tools:
         6. COLUMN_QUERY_PRUNING_HISTORY - Column-level pruning metrics
         7. TABLE_PRUNING_HISTORY - Overall table pruning efficiency
         8. WAREHOUSE_LOAD_HISTORY - Warehouse concurrency and queuing
-        
+       
         Available time range: Last 365 days (with 45-minute latency)
-
+ 
   - tool_spec:
       type: "cortex_search"
       name: "SNOWFLAKE_DOCUMENTATION"
       description: |
         Searches the official Snowflake documentation using Cortex Search.
-        
+       
         Use this tool to find information about:
         - Snowflake features and capabilities
         - SQL syntax and functions
@@ -267,24 +267,24 @@ tools:
         - New features and releases
         - Security and governance
         - Data sharing and collaboration
-        
-        This tool provides authoritative, up-to-date information from 
-        Snowflake's official documentation to supplement your analysis 
+       
+        This tool provides authoritative, up-to-date information from
+        Snowflake's official documentation to supplement your analysis
         and recommendations.
-        
+       
         Use this when users ask:
         - "How does [feature] work?"
         - "What is the syntax for [command]?"
         - "Best practices for [topic]"
         - "Tell me about [Snowflake feature]"
         - "What's new in [version/feature]?"
-
+ 
   - tool_spec:
-      type: "function"
+      type: "generic"
       name: "QueryDataFetcher"
       description: |
         Fetches detailed query operator statistics for a specific query ID.
-        
+       
         Use this tool to analyze:
         - Query execution plan and operator tree
         - Operator-level statistics (rows, bytes, execution time)
@@ -293,240 +293,257 @@ tools:
         - Spilling detection (local/remote)
         - Join explosion detection
         - Bottleneck identification
-        
-        Input: query_id (UUID format)
+       
+        Input: query_id (UUID format), output_format ('pretty' or 'minified')
         Output: JSON with summary metrics and detailed operator statistics
-        
-        Call this when user asks to "analyze query", "why is my query slow", 
+       
+        Call this when user asks to "analyze query", "why is my query slow",
         or provides a specific query ID for investigation.
-
+      input_schema:
+        type: "object"
+        properties:
+          query_id:
+            type: "string"
+            description: "The query ID to analyze (UUID format)"
+          output_format:
+            type: "string"
+            description: "Output format: 'pretty' or 'minified'"
+        required:
+          - "query_id"
+ 
   - tool_spec:
-      type: "function"
+      type: "generic"
       name: "QueryTextFetcher"
       description: |
         Retrieves query text and execution metadata for a specific query ID.
-        
+       
         Returns:
         - Complete SQL query text (formatted)
         - User and role information
         - Warehouse size used
         - Query load percentage
-        
+       
         Input: query_id (UUID format)
         Output: JSON with query details
-        
+       
         Use this to see the actual SQL for a query before analyzing performance.
-
+      input_schema:
+        type: "object"
+        properties:
+          query_id:
+            type: "string"
+            description: "The query ID to retrieve (UUID format)"
+        required:
+          - "query_id"
+ 
   - tool_spec:
-      type: "function"
+      type: "generic"
       name: "FieldDefinitions"
       description: |
         Returns comprehensive field definitions for Snowflake query operator statistics.
-        
+       
         Use this reference to understand:
         - OPERATOR_STATISTICS fields (I/O, pruning, spilling, DML)
         - EXECUTION_TIME_BREAKDOWN components
         - Core operator fields (OPERATOR_TYPE, PARENT_OPERATORS)
-        
+       
         Call this when you need to explain query metrics to the user.
-
+      input_schema:
+        type: "object"
+        properties: {}
+ 
   - tool_spec:
-      type: "function"
+      type: "generic"
       name: "AnalysisGuidance"
       description: |
         Returns performance threshold guidance for query analysis.
-        
+       
         Provides benchmarks for:
         - Execution time thresholds (GREAT/GOOD/POOR/CRITICAL)
         - Table scan efficiency criteria
         - Join performance (row multiplication factors)
         - Spilling severity levels
-        
+       
         Use this to categorize query performance and set expectations.
-
+      input_schema:
+        type: "object"
+        properties: {}
+ 
   - tool_spec:
-      type: "function"
+      type: "generic"
       name: "Gen2BenchmarkLookup"
       description: |
         Looks up Gen2 warehouse performance improvement estimate based on query pattern.
-        
+       
         Uses AI to match query description to benchmark data for:
         - Table scans
         - Joins
         - DML operations
         - Semi-structured data queries
         - Window functions
-        
-        Input: query_desc_input (description of query operations)
+       
+        Input: QUERY_DESC_INPUT (description of query operations)
         Output: Estimated speedup factor (AWS Gen2 vs Gen1 average)
-        
+       
         Use this to predict Gen2 warehouse benefits for specific queries.
-
+      input_schema:
+        type: "object"
+        properties:
+          QUERY_DESC_INPUT:
+            type: "string"
+            description: "Description of query operations (e.g., 'large table scan', 'complex joins')"
+        required:
+          - "QUERY_DESC_INPUT"
+ 
   - tool_spec:
-      type: "function"
+      type: "generic"
       name: "GetObjectDDL"
       description: |
         Extracts DDL for any Snowflake object.
-        
-        Supported object types: TABLE, VIEW, SCHEMA, DATABASE, FUNCTION, 
+       
+        Supported object types: TABLE, VIEW, SCHEMA, DATABASE, FUNCTION,
         PROCEDURE, WAREHOUSE, DYNAMIC_TABLE, STREAM, TASK, PIPE, and more.
-        
+       
         Inputs:
         - object_type: Type of object (e.g., 'TABLE', 'VIEW')
         - object_name: Fully qualified name (e.g., 'DB.SCHEMA.TABLE')
         - use_fully_qualified_names: Boolean (default TRUE)
-        
+       
         Output: Formatted DDL with metadata analysis
-        
-        Use this when user asks to "show DDL", "get table definition", 
+       
+        Use this when user asks to "show DDL", "get table definition",
         or "what is the structure of".
-
+      input_schema:
+        type: "object"
+        properties:
+          object_type:
+            type: "string"
+            description: "Type of object (TABLE, VIEW, FUNCTION, etc.)"
+          object_name:
+            type: "string"
+            description: "Fully qualified object name"
+          use_fully_qualified_names:
+            type: "boolean"
+            description: "Use fully qualified names in DDL output"
+        required:
+          - "object_type"
+          - "object_name"
+ 
   - tool_spec:
-      type: "function"
+      type: "generic"
       name: "ExecuteDDL"
       description: |
         Executes DDL statements (CREATE, ALTER, DROP, SHOW, DESCRIBE, GRANT, etc.).
-        
+       
         Inputs:
         - ddl_statement: SQL DDL statement to execute
         - output_format: 'pretty', 'minified', or 'table' (default 'pretty')
-        
+       
         Output: JSON with execution status and results
-        
+       
         ⚠️ SAFETY: Always confirm with user before executing DROP or destructive DDL.
         Use this for object creation, modification, or information retrieval.
-
+      input_schema:
+        type: "object"
+        properties:
+          ddl_statement:
+            type: "string"
+            description: "DDL statement to execute"
+          output_format:
+            type: "string"
+            description: "Output format: 'pretty', 'minified', or 'table'"
+        required:
+          - "ddl_statement"
+ 
   - tool_spec:
-      type: "function"
+      type: "generic"
       name: "ExecuteDML"
       description: |
         Executes DML statements (SELECT, INSERT, UPDATE, DELETE, MERGE).
-        
+       
         Inputs:
         - dml_statement: SQL DML statement to execute
         - output_format: 'table', 'json', or 'summary' (default 'table')
-        
+       
         Output: Query results formatted per output_format
-        
+       
         ⚠️ SAFETY: Be cautious with UPDATE/DELETE. Recommend WHERE clauses.
         Use this for data queries and modifications.
+      input_schema:
+        type: "object"
+        properties:
+          dml_statement:
+            type: "string"
+            description: "DML statement to execute"
+          output_format:
+            type: "string"
+            description: "Output format: 'table', 'json', or 'summary'"
+        required:
+          - "dml_statement"
 
 tool_resources:
   AccountUsageAnalyst:
     semantic_view: "DIGITALSE.PUBLIC.ACCOUNT_USAGE_SEMANTIC_VIEW"
-  
+ 
   SNOWFLAKE_DOCUMENTATION:
     name: "SNOWFLAKE_DOCUMENTATION.SHARED.CKE_SNOWFLAKE_DOCS_SERVICE"
     max_results: 5
-  
+ 
   QueryDataFetcher:
     type: "procedure"
     execution_environment:
       type: "warehouse"
       warehouse: "DIGITALSE_WH"
-      query_timeout: 30
     identifier: "DIGITALSE.QUERY_DEMO.QUERY_DATA_FETCHER"
-    parameters:
-      - name: "query_id"
-        type: "STRING"
-        description: "The query ID to analyze (UUID format)"
-      - name: "output_format"
-        type: "STRING"
-        description: "Output format: 'pretty' or 'minified'"
-        default: "pretty"
-  
+ 
   QueryTextFetcher:
     type: "procedure"
     execution_environment:
       type: "warehouse"
       warehouse: "DIGITALSE_WH"
-      query_timeout: 30
     identifier: "DIGITALSE.TOOLS.QUERY_TEXT"
-    parameters:
-      - name: "query_id"
-        type: "VARCHAR"
-        description: "The query ID to retrieve (UUID format)"
-  
+ 
   FieldDefinitions:
     type: "procedure"
     execution_environment:
       type: "warehouse"
       warehouse: "DIGITALSE_WH"
-      query_timeout: 30
     identifier: "DIGITALSE.QUERY_DEMO.FIELD_DEFINITIONS"
-    parameters: []
-  
+ 
   AnalysisGuidance:
     type: "procedure"
     execution_environment:
       type: "warehouse"
       warehouse: "DIGITALSE_WH"
-      query_timeout: 30
     identifier: "DIGITALSE.QUERY_DEMO.ANALYSIS_GUIDANCE"
-    parameters: []
-  
+ 
   Gen2BenchmarkLookup:
     type: "function"
     execution_environment:
       type: "warehouse"
       warehouse: "DIGITALSE_WH"
-      query_timeout: 30
     identifier: "DIGITALSE.BENCHMARK.FN_BENCHMARK_LOOKUP_BY_QUERY"
-    parameters:
-      - name: "QUERY_DESC_INPUT"
-        type: "VARCHAR"
-        description: "Description of query operations (e.g., 'large table scan', 'complex joins')"
-  
+ 
   GetObjectDDL:
     type: "procedure"
     execution_environment:
       type: "warehouse"
       warehouse: "DIGITALSE_WH"
-      query_timeout: 30
     identifier: "DIGITALSE.TOOLS.GET_OBJECT_DDL"
-    parameters:
-      - name: "object_type"
-        type: "STRING"
-        description: "Type of object (TABLE, VIEW, FUNCTION, etc.)"
-      - name: "object_name"
-        type: "STRING"
-        description: "Fully qualified object name"
-      - name: "use_fully_qualified_names"
-        type: "BOOLEAN"
-        description: "Use fully qualified names in DDL output"
-        default: true
-  
+ 
   ExecuteDDL:
     type: "procedure"
     execution_environment:
       type: "warehouse"
       warehouse: "DIGITALSE_WH"
-      query_timeout: 30
     identifier: "DIGITALSE.TOOLS.EXECUTE_DDL"
-    parameters:
-      - name: "ddl_statement"
-        type: "STRING"
-        description: "DDL statement to execute"
-      - name: "output_format"
-        type: "STRING"
-        description: "Output format: 'pretty', 'minified', or 'table'"
-        default: "pretty"
-  
+ 
   ExecuteDML:
     type: "procedure"
     execution_environment:
       type: "warehouse"
       warehouse: "DIGITALSE_WH"
-      query_timeout: 30
     identifier: "DIGITALSE.TOOLS.EXECUTE_DML"
-    parameters:
-      - name: "dml_statement"
-        type: "STRING"
-        description: "DML statement to execute"
-      - name: "output_format"
-        type: "STRING"
-        description: "Output format: 'table', 'json', or 'summary'"
-        default: "table"
 $$;
 
 
